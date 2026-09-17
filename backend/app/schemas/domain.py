@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 from app.schemas.common import ORMModel
 
 class Token(BaseModel):
@@ -91,6 +91,15 @@ class MaintenanceOut(ORMModel):
 
 class TelemetryIn(BaseModel):
     mission_id: int
+    battery_pct: float = Field(ge=0, le=100)
+    speed_ms: float = Field(ge=0)
+    altitude_m: float = Field(ge=0)
+    power_w: float = Field(ge=0)
+
+class TelemetryOut(ORMModel):
+    id: int
+    mission_id: int
+    timestamp: datetime
     battery_pct: float
     speed_ms: float
     altitude_m: float
@@ -105,6 +114,16 @@ class PredictionOut(BaseModel):
     risk_level: str
     explanation: dict
     recommendation: str
+
+class PredictionHistoryOut(PredictionOut):
+    id: int
+    created_at: datetime
+
+class WhatIfIn(BaseModel):
+    payload_kg: float | None = Field(default=None, ge=0)
+    wind_speed_ms: float | None = Field(default=None, ge=0)
+    planned_speed_ms: float | None = Field(default=None, gt=0)
+    battery_soh: float | None = Field(default=None, ge=0, le=100)
 
 class KPIOut(BaseModel):
     missions_total: int
