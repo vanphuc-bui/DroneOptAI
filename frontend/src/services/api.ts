@@ -1,4 +1,4 @@
-const PROD_API='https://droneoptai-api.bvphuc28.workers.dev/api'
+const PROD_API='https://droneoptai-api-bvphuc28.onrender.com/api'
 const API=import.meta.env.VITE_API_URL || (window.location.hostname==='localhost'?'http://localhost:8000/api':PROD_API)
 export type User={id:number,email:string,full_name:string,role:string}
 export const store={get token(){return localStorage.getItem('token')||''},get user(){const x=localStorage.getItem('user');return x?JSON.parse(x):null},setAuth(token:string,user:User){localStorage.setItem('token',token);localStorage.setItem('user',JSON.stringify(user))},clear(){localStorage.clear()}}
