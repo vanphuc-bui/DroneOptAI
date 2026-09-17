@@ -1,0 +1,5 @@
+const API=import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+export type User={id:number,email:string,full_name:string,role:string}
+export const store={get token(){return localStorage.getItem('token')||''},get user(){const x=localStorage.getItem('user');return x?JSON.parse(x):null},setAuth(token:string,user:User){localStorage.setItem('token',token);localStorage.setItem('user',JSON.stringify(user))},clear(){localStorage.clear()}}
+export async function api(path:string,init:RequestInit={}){const h:any={'Content-Type':'application/json',...(init.headers||{})};if(store.token)h.Authorization=`Bearer ${store.token}`;const r=await fetch(`${API}${path}`,{...init,headers:h});if(!r.ok)throw new Error((await r.json().catch(()=>({detail:r.statusText}))).detail||'Request failed');return r.json()}
+export async function login(email:string,password:string){const body=new URLSearchParams({username:email,password});const r=await fetch(`${API}/auth/login`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});if(!r.ok)throw new Error('Invalid credentials');const x=await r.json();store.setAuth(x.access_token,x.user);return x.user}

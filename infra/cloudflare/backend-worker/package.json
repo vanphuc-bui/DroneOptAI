@@ -1,0 +1,1 @@
+{"name":"droneoptai-backend-worker","private":true,"type":"module","scripts":{"deploy":"wrangler deploy","dev":"wrangler dev"},"dependencies":{"@cloudflare/containers":"latest"},"devDependencies":{"wrangler":"latest","typescript":"latest","@cloudflare/workers-types":"latest"}}

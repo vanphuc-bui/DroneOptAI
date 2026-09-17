@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "droneoptai-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-17",
+  "containers": [
+    {
+      "class_name": "DroneOptAPI",
+      "image": "../../../backend/Dockerfile",
+      "max_instances": 1
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      { "name": "DRONEOPT_API", "class_name": "DroneOptAPI" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["DroneOptAPI"] }
+  ]
+}

@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: droneopt
+      POSTGRES_USER: droneopt
+      POSTGRES_PASSWORD: droneopt
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U droneopt"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://droneopt:droneopt@db:5432/droneopt
+      JWT_SECRET: local-demo-secret-change-in-production
+      CORS_ORIGINS: http://localhost:5173
+    ports: ["8000:8000"]
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    volumes: ["./frontend:/app"]
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    environment:
+      VITE_API_URL: http://localhost:8000/api
+    ports: ["5173:5173"]
+    depends_on: [api]
+volumes:
+  postgres_data:
