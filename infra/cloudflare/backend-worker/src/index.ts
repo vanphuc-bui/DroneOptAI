@@ -4,6 +4,10 @@ export class DroneOptAPI extends Container {
   defaultPort = 8000
   sleepAfter = '10m'
   enableInternet = true
+  envVars = {
+    CORS_ORIGINS: 'https://droneoptai.bvphuc28.workers.dev',
+    DATABASE_URL: 'sqlite:///./droneoptai.db'
+  }
 }
 
 export default {
