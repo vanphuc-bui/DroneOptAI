@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./droneoptai.db"
     jwt_secret: str = "change-me-in-production"
     access_token_minutes: int = 720
-    cors_origins: str = "http://localhost:5173"
+    cors_origins: str = "http://localhost:5173,https://droneoptai.bvphuc28.workers.dev"
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings()
