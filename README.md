@@ -1,7 +1,5 @@
 # DroneOptAI — Reference Implementation
 
-
-
 A complete teaching/reference implementation of **Intelligent Drone Energy Analytics and Operational Management System**. It is intentionally independent from any student implementation and can be used to demonstrate one possible end-to-end architecture.
 
 ## What is included
@@ -17,11 +15,11 @@ A complete teaching/reference implementation of **Intelligent Drone Energy Analy
 - KPI dashboard and audit trail
 - FastAPI REST API with OpenAPI docs
 - React + TypeScript dashboard
-- PostgreSQL for local/production deployments; SQLite fallback for zero-config demo
+- SQLite zero-config demo, with SQLAlchemy ready for PostgreSQL later
 - Docker Compose local environment
 - GitHub Actions CI
-- Cloudflare Workers Static Assets configuration for the frontend
-- Cloudflare Containers worker configuration for the FastAPI/ML backend
+- Cloudflare Workers Static Assets frontend
+- Render Free Docker backend blueprint
 
 ## Demo accounts
 
@@ -33,6 +31,56 @@ A complete teaching/reference implementation of **Intelligent Drone Energy Analy
 | Customer | `customer@droneopt.ai` | `Customer123!` |
 
 > Demo credentials are seeded only for illustration. Replace them and `JWT_SECRET` before any real deployment.
+
+## Zero-cost demo deployment
+
+The recommended demo architecture is:
+
+```text
+GitHub
+  |
+  +--> Cloudflare Workers Static Assets (React frontend)
+  |       https://droneoptai.bvphuc28.workers.dev
+  |
+  +--> Render Free Web Service (FastAPI + ML/XAI Docker backend)
+          https://droneoptai-api-bvphuc28.onrender.com
+          |
+          +--> SQLite demo database
+```
+
+This preserves the proposal stack (`React`, `FastAPI`, `Python`, `scikit-learn`, `SHAP`, `Docker`) without requiring Cloudflare Containers.
+
+### Deploy the backend on Render Free
+
+A root-level `render.yaml` is included. In Render:
+
+1. Sign in and choose **New → Blueprint**.
+2. Connect GitHub repository `vanphuc-bui/DroneOptAI`.
+3. Select the root `render.yaml`.
+4. Create/sync the Blueprint.
+5. Wait until service `droneoptai-api-bvphuc28` becomes live.
+6. Verify:
+   - Health: `https://droneoptai-api-bvphuc28.onrender.com/health`
+   - Swagger: `https://droneoptai-api-bvphuc28.onrender.com/docs`
+
+The frontend already uses this production API URL by default, so Cloudflare will reconnect automatically after its next build.
+
+Render Free sleeps after inactivity and uses an ephemeral filesystem. Therefore the demo SQLite database can be reset after sleep/redeploy. The application automatically recreates tables and reseeds the demo data on startup.
+
+### Cloudflare frontend
+
+The frontend contains `frontend/wrangler.jsonc` configured for Workers Static Assets / SPA fallback.
+
+Current production build settings:
+
+```text
+Root directory: /frontend
+Build command:  bun run build
+Deploy command: bunx wrangler deploy
+Branch:         main
+```
+
+Optional override: define `VITE_API_URL` at build time if the backend URL changes.
 
 ## Run everything locally
 
@@ -62,20 +110,15 @@ Without `DATABASE_URL`, the backend uses a local SQLite database for a fast demo
 ## Architecture
 
 ```text
-React / TypeScript
+React / TypeScript on Cloudflare
        |
        | HTTPS REST
        v
-Cloudflare Worker / Container gateway
-       |
-       v
-FastAPI application
+FastAPI on Render Free
   |       |        |
   |       |        +--> ML prediction + SHAP/XAI
   |       +-----------> Audit / KPI / recommendation
-  +-------------------> PostgreSQL
-
-Telemetry / model artifacts can be moved to R2 for production scale.
+  +-------------------> SQLite demo / PostgreSQL later
 ```
 
 ## ML demonstration
@@ -91,31 +134,9 @@ The synthetic training command exists only to make the reference application sel
 
 This repository is a **reference system implementation**, not a claim that the demo model is scientifically validated. Model quality must be established separately using the actual project dataset, model comparison, grouped/cross-validation strategy, error analysis and documented SHAP analysis.
 
-## Cloudflare deployment
+## Optional paid Cloudflare backend
 
-### Frontend
-
-The frontend contains `wrangler.jsonc` configured for Workers Static Assets / SPA fallback.
-
-```bash
-cd frontend
-npm install
-npm run deploy
-```
-
-Set `VITE_API_URL` to the deployed API URL before the production build.
-
-### FastAPI + ML container
-
-A current Cloudflare Containers example is under `infra/cloudflare/backend-worker`.
-
-```bash
-cd infra/cloudflare/backend-worker
-npm install
-npx wrangler deploy
-```
-
-Production still needs secure database connectivity and secrets. Do not commit database passwords or JWT secrets.
+The previous Cloudflare Containers example remains under `infra/cloudflare/backend-worker`. It is optional and is **not required** for the zero-cost demo path.
 
 ## Suggested classroom walkthrough
 
@@ -131,7 +152,8 @@ Production still needs secure database connectivity and secrets. Do not commit d
 ```text
 backend/                  FastAPI, SQLAlchemy, ML/XAI, tests
 frontend/                 React + TypeScript dashboard
-infra/cloudflare/         Cloudflare Container deployment example
+render.yaml               Render Free backend deployment
+infra/cloudflare/         Optional Cloudflare Container example
 .github/workflows/        CI
 Dockerfile / compose      Reproducible local deployment
 ```
