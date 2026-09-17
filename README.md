@@ -1,6 +1,7 @@
 # DroneOptAI — Reference Implementation
 
 
+
 A complete teaching/reference implementation of **Intelligent Drone Energy Analytics and Operational Management System**. It is intentionally independent from any student implementation and can be used to demonstrate one possible end-to-end architecture.
 
 ## What is included
