@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: droneoptai-api-bvphuc28
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://droneoptai.bvphuc28.workers.dev,http://localhost:5173
+      - key: DATABASE_URL
+        value: sqlite:///./droneoptai.db
+      - key: ACCESS_TOKEN_MINUTES
+        value: "720"
