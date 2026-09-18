@@ -1,17 +1,28 @@
+databases:
+  - name: droneoptai-db
+    plan: free
+    region: frankfurt
+
 services:
   - type: web
     name: droneoptai-api-bvphuc28
-    runtime: docker
+    runtime: python
     plan: free
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    region: frankfurt
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
+    autoDeployTrigger: commit
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS
         value: https://droneoptai.bvphuc28.workers.dev,http://localhost:5173
       - key: DATABASE_URL
-        value: sqlite:///./droneoptai.db
+        fromDatabase:
+          name: droneoptai-db
+          property: connectionString
       - key: ACCESS_TOKEN_MINUTES
         value: "720"
