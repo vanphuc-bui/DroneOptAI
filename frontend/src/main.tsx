@@ -1,9 +1,10 @@
-import React,{useEffect,useMemo,useState} from 'react'
+import React,{useEffect,useState} from 'react'
 import {createRoot} from 'react-dom/client'
 import {BrowserRouter} from 'react-router-dom'
 import {Activity,Plane,BatteryCharging,Wrench,ShieldCheck,BrainCircuit,LogOut,MapPin,Gauge,Users,AlertTriangle,CloudSun,FileBarChart,Radio,PlusCircle} from 'lucide-react'
 import {api,login,store,User} from './services/api'
 import './styles.css'
+import './v11.css'
 
 type KPI={missions_total:number,completion_rate:number,fleet_available:number,maintenance_open:number,avg_battery_soh:number,avg_prediction_energy_wh:number}
 const demoAccounts=[['Admin','admin@droneopt.ai','Admin123!'],['Operator','operator@droneopt.ai','Operator123!'],['Technician','tech@droneopt.ai','Tech123!'],['Customer','customer@droneopt.ai','Customer123!']]
